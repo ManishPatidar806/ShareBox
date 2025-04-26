@@ -4,12 +4,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, ArrowRight } from 'lucide-react';
 import axios from 'axios';
-import API from '../../utils/api'; // Ensure this path is correct and the API file exists
+import API from '../../utils/api';
+import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Loading from '../Loading/Loading';
 
 const OTPVerification = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(360);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -19,15 +21,14 @@ const OTPVerification = () => {
 
   useEffect(() => {
     inputRefs.current[0]?.focus();
-    const intervalId = startTimer();
-    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+    startTimer();
   }, []);
 
   const startTimer = () => {
-    const intervalId = setInterval(() => {
+    const interval = setInterval(() => {
       setTimer((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
-    return intervalId; // Return interval ID for cleanup
+    return () => clearInterval(interval);
   };
 
   const handleChange = (index, value) => {
@@ -49,50 +50,52 @@ const OTPVerification = () => {
   };
 
   const handleVerify = async () => {
-      try {
-        setIsLoading(true);
-        setError('');
-        setSuccess('');
-  
-        const otpValue = otp.join('');
-  
-        const response = await API.post(`/api/email/verify?otp=${otpValue}&email=${searchParams.get('email')}`);
-  
-        if (response.data && response.data.token) {
-          localStorage.setItem('token', response.data.token);
-          document.cookie = `token=${response.data.token}; path=/;`;
-          setSuccess('OTP verified successfully');
-          router.push('/');
-        } else {
-          setError(response.data?.message || 'Invalid OTP');
-        }
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to verify OTP');
-      } finally {
-        setIsLoading(false);
+    try {
+      setIsLoading(true);
+      setError('');
+      setSuccess('');
+
+      const otpValue = otp.join('');
+
+      const response = await API.post(`/api/email/verify?otp=${otpValue}&email=${searchParams.get('email')}`);
+
+      if (response.data != "") {
+        localStorage.setItem('token', response.data);
+        document.cookie = `token=${response.data.token}; path=/;`;
+        setSuccess('OTP verified successfully');
+        router.push('/');
+      } else {
+        setError(response.data.message || 'Invalid OTP');
       }
-    };
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to verify OTP');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleResend = async () => {
-      try {
-        setError('');
-        const response = await axios.post('/api/resend-otp', {
-          // Add necessary data
-          // email: user.email,
-          // phone: user.phone,
-        });
-  
-        if (response.data && response.data.success) {
-          setTimer(30);
-        } else {
-          setError(response.data?.message || 'Failed to resend OTP');
-        }
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to resend OTP');
+    try {
+      setError('');
+      const response = await axios.post('/api/resend-otp', {
+        // Add necessary data
+        // email: user.email,
+        // phone: user.phone,
+      });
+
+      if (response.data.success) {
+        setTimer(30);
+        startTimer();
+      } else {
+        setError(response.data.message || 'Failed to resend OTP');
       }
-    };
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to resend OTP');
+    }
+  };
 
   return (
+    <Suspense fallback={<Loading/>}>
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -177,7 +180,7 @@ const OTPVerification = () => {
           Do not share your OTP with anyone
         </div>
       </motion.div>
-    </div>
+    </div></Suspense>
   );
 };
 

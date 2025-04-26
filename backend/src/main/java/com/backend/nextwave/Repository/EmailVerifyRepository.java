@@ -14,6 +14,6 @@ public interface EmailVerifyRepository extends JpaRepository<OTP, Long> {
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM OTP o WHERE o.expiryTime<:now")
+    @Query("DELETE FROM share_box_otp o WHERE o.expiryTime<:now")
     void deleteByExpiryTimeBefore(@Param("now") LocalDateTime now);
 }
