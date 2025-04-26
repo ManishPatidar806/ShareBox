@@ -1,0 +1,25 @@
+{
+  "files.exclude": {
+    "**/.git": false,
+    "**/.svn": false,
+    "**/.hg": false,
+    "**/.DS_Store": false,
+    "**/Thumbs.db": false,
+    "**/CVS": false,
+    "**/__pycache__": false,
+    "**/.pytest_cache": false,
+    "**/node_modules": false,
+    "**/package-lock.json": false,
+    "**/postcss.config.*js": false,
+    "**/tsconfig.node.json": false,
+    "**/.gitignore": false,
+    "**/.eslintrc.*": false,
+    "**/.next": false,
+    "**/next-env*": false,
+    "**/.logs": false,
+    "**/.env": false,
+    "**/.vscode": false,
+    "**/**.class": false
+  },
+  "explorerExclude.backup": {}
+}
