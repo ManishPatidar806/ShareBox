@@ -1,4 +1,4 @@
-# Urja Project
+# SHareBox
 ## Overview
 ShareBox is a secure file-sharing system designed to ensure the confidentiality and integrity of shared files. By leveraging AES-256 encryption, ShareBox provides a robust platform for secure file transfers. The system integrates a powerful backend with a modern frontend to deliver a seamless and secure user experience.
 
@@ -41,7 +41,7 @@ ShareBox is a secure file-sharing system designed to ensure the confidentiality 
 ## Installation
 
 ### Prerequisites
-- Java 11 or higher
+- Java 21 or higher
 - Node.js (v14 or higher)
 - npm (v6 or higher)
 - MySQL (local or remote instance)
@@ -49,7 +49,7 @@ ShareBox is a secure file-sharing system designed to ensure the confidentiality 
 ### Steps
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-repo/sharebox.git
+    git clone https://github.com/ManishPatidar806/ShareBox.git
     ```
 2. Navigate to the project directory:
     ```bash
@@ -91,29 +91,8 @@ ShareBox is a secure file-sharing system designed to ensure the confidentiality 
 
 ---
 
-## Contributing
-We welcome contributions to improve ShareBox. To contribute:
-1. Fork the repository.
-2. Create a feature branch:
-    ```bash
-    git checkout -b feature-name
-    ```
-3. Commit your changes:
-    ```bash
-    git commit -m "Add feature-name"
-    ```
-4. Push the branch:
-    ```bash
-    git push origin feature-name
-    ```
-5. Submit a pull request for review.
-
----
 
 ## License
 This project is licensed under the MIT License. See the `LICENSE` file for more details.
 
 ---
-
-## Contact
-For questions, feedback, or support, reach out to the ShareBox Team at support@sharebox.com.
