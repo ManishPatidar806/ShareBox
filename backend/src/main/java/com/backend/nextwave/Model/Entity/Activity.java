@@ -1,6 +1,6 @@
-package com.backend.nextwave.Model;
+package com.backend.nextwave.Model.Entity;
 
-import com.backend.nextwave.utils.Status;
+import com.backend.nextwave.Model.Enum.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
@@ -9,7 +9,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-@Entity(name = "share_box_activity")
+@Entity
 public class Activity {
 
     @Id

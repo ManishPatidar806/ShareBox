@@ -4,7 +4,7 @@ import com.backend.nextwave.Config.JwtConfig;
 import com.backend.nextwave.DTO.ChangePasswordDto;
 import com.backend.nextwave.Exception.CommanException;
 import com.backend.nextwave.Exception.UserNotFoundException;
-import com.backend.nextwave.Model.User;
+import com.backend.nextwave.Model.Entity.User;
 import com.backend.nextwave.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,16 +41,6 @@ public class AuthServiceImpl implements AuthService{
         }
     }
 
-
-    public User extraceUser(String token) throws Exception {
-        String email = jwtConfig.extractEmail(token);
-        Optional<User> user = userRepository.findByEmail(email);
-        if(user.isPresent()){
-            return user.get();
-        }else {
-            throw new UserNotFoundException();
-        }
-    }
 
     public User enableTwoStepVerification(String email) throws Exception {
         Optional<User> user = userRepository.findByEmail(email);

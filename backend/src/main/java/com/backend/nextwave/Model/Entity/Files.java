@@ -1,4 +1,4 @@
-package com.backend.nextwave.Model;
+package com.backend.nextwave.Model.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-@Entity(name = "share_box_file")
+@Entity
 public class Files {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

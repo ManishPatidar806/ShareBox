@@ -1,4 +1,4 @@
-package com.backend.nextwave.utils;
+package com.backend.nextwave.Model.Enum;
 
 public enum Status {
     Download,

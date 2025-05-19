@@ -1,4 +1,4 @@
-package com.backend.nextwave.Model;
+package com.backend.nextwave.Model.Entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +9,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@Entity(name = "share_box_otp")
+@Entity
 public class OTP {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

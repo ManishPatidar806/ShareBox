@@ -2,7 +2,7 @@ package com.backend.nextwave.Service;
 
 import com.backend.nextwave.DTO.FileUploadRequest;
 import com.backend.nextwave.Exception.FileNotFoundException;
-import com.backend.nextwave.Model.Files;
+import com.backend.nextwave.Model.Entity.Files;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

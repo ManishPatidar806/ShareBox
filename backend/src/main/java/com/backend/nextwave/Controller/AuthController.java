@@ -5,15 +5,16 @@ import com.backend.nextwave.DTO.AuthResponse;
 import com.backend.nextwave.DTO.ChangePasswordDto;
 import com.backend.nextwave.DTO.CommonResponse;
 import com.backend.nextwave.Exception.UnAuthorizeException;
-import com.backend.nextwave.Model.User;
+import com.backend.nextwave.Model.Entity.User;
 import com.backend.nextwave.Service.AuthService;
 import com.backend.nextwave.Service.EmailVerifyService;
+import com.backend.nextwave.Service.UserDetail;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,19 +23,23 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private JwtConfig jwtConfig;
 
-    @Autowired
-    private AuthService authService;
+    private final JwtConfig jwtConfig;
 
-    @Autowired
-    private EmailVerifyService emailVerifyService;
+    private final AuthService authService;
+
+    private final EmailVerifyService emailVerifyService;
+
+    public AuthController(JwtConfig jwtConfig, AuthService authService, EmailVerifyService emailVerifyService) {
+        this.jwtConfig = jwtConfig;
+        this.authService = authService;
+        this.emailVerifyService = emailVerifyService;
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> signup(@RequestBody @Valid User user) throws Exception {
         User user1 = authService.signUpUser(user);
-        String token  = jwtConfig.generateToken(user.getUsername(), user.getEmail());
+        String token  = jwtConfig.generateToken(user.getEmail());
         AuthResponse authResponse = new AuthResponse();
         authResponse.setMessage("User registered successfully.");
         authResponse.setStatus(true);
@@ -51,7 +56,7 @@ public class AuthController {
             authResponse.setMessage("Two-factor authentication is enabled. Please verify the OTP sent to your email.");
             return  new ResponseEntity<>(authResponse , HttpStatus.OK);
         }
-        String token  = jwtConfig.generateToken(email,password);
+        String token  = jwtConfig.generateToken(email);
         authResponse.setMessage("Login successful. Welcome back!");
         authResponse.setStatus(true);
         authResponse.setToken(token);
@@ -59,11 +64,9 @@ public class AuthController {
     }
 
     @GetMapping("/enableTwoStepVerification")
-    public ResponseEntity<CommonResponse> enableTwoStepVerification(@RequestHeader("Authorization") String token) throws Exception {
-        if (!jwtConfig.validateToken(token)){
-            throw new UnAuthorizeException();
-        }
-       String email =jwtConfig.extractEmail(token);
+    public ResponseEntity<CommonResponse> enableTwoStepVerification(@AuthenticationPrincipal UserDetail userDetail) throws Exception {
+
+       String email =userDetail.getUsername();
         User user = authService.enableTwoStepVerification(email);
         CommonResponse commonResponse = new CommonResponse();
         if(user.isTwoFactorEnabled()){
@@ -76,11 +79,9 @@ public class AuthController {
     }
 
     @PostMapping("/changepassword")
-    public ResponseEntity<CommonResponse> enableTwoStepVerification(@RequestHeader("Authorization") String token, @RequestBody ChangePasswordDto changePasswordDto) throws Exception {
-        if (!jwtConfig.validateToken(token)) {
-            throw new UnAuthorizeException();
-        }
-        String email = jwtConfig.extractEmail(token);
+    public ResponseEntity<CommonResponse> enableTwoStepVerification(@AuthenticationPrincipal UserDetail userDetail, @RequestBody ChangePasswordDto changePasswordDto) throws Exception {
+
+        String email = userDetail.getUsername();
         User user = authService.changePassword(email, changePasswordDto);
 
         CommonResponse commonResponse = new CommonResponse();

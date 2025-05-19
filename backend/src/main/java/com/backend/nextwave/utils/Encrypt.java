@@ -1,4 +1,4 @@
-package com.backend.nextwave.Config;
+package com.backend.nextwave.utils;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;

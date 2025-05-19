@@ -4,9 +4,9 @@ import com.backend.nextwave.Config.JwtConfig;
 import com.backend.nextwave.DTO.ActivityResponse;
 import com.backend.nextwave.Exception.CommanException;
 import com.backend.nextwave.Exception.UnAuthorizeException;
-import com.backend.nextwave.Model.Activity;
+import com.backend.nextwave.Model.Entity.Activity;
 import com.backend.nextwave.Service.ActivityService;
-import com.backend.nextwave.utils.Status;
+import com.backend.nextwave.Model.Enum.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,22 +20,24 @@ import java.util.Optional;
 
 public class ActivityController {
 
-    @Autowired
-    private ActivityService activityService;
+    private final ActivityService activityService;
 
-    @Autowired
-    private JwtConfig jwtConfig;
+
+    private final JwtConfig jwtConfig;
+
+    public ActivityController(ActivityService activityService, JwtConfig jwtConfig) {
+        this.activityService = activityService;
+        this.jwtConfig = jwtConfig;
+    }
 
     @GetMapping("/activity")
     public ResponseEntity<ActivityResponse> getAllTestCases(
             @RequestParam
             Optional<Status> status,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size ,@RequestHeader("Authorization") String token) throws CommanException, UnAuthorizeException {
+            @RequestParam(defaultValue = "10") int size ) throws CommanException, UnAuthorizeException {
 
-        if (!jwtConfig.validateToken(token)){
-            throw new UnAuthorizeException();
-        }
+
 
         ActivityResponse responseDTO = new ActivityResponse();
         Page<Activity> testCases = activityService.findAllActivity(status, page, size);

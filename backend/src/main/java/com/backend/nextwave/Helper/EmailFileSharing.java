@@ -1,15 +1,11 @@
 package com.backend.nextwave.Helper;
 
-import com.backend.nextwave.Model.Files;
+import com.backend.nextwave.Model.Entity.Files;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Random;
 
 @Service
 public class EmailFileSharing {

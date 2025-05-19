@@ -1,6 +1,6 @@
 package com.backend.nextwave.DTO;
 
-import com.backend.nextwave.Model.Files;
+import com.backend.nextwave.Model.Entity.Files;
 import lombok.Data;
 
 @Data

@@ -1,11 +1,10 @@
 package com.backend.nextwave.Service;
 
-import com.backend.nextwave.Config.Encrypt;
+import com.backend.nextwave.utils.Encrypt;
 import com.backend.nextwave.DTO.FileUploadRequest;
 import com.backend.nextwave.Exception.FileNotFoundException;
 
-import com.backend.nextwave.Model.Files;
-import com.backend.nextwave.Model.User;
+import com.backend.nextwave.Model.Entity.Files;
 import com.backend.nextwave.Repository.FilesRepository;
 import com.backend.nextwave.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

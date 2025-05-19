@@ -1,6 +1,6 @@
 package com.backend.nextwave.Repository;
 
-import com.backend.nextwave.Model.User;
+import com.backend.nextwave.Model.Entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

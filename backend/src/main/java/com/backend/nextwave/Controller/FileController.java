@@ -4,23 +4,20 @@ import com.backend.nextwave.Config.JwtConfig;
 import com.backend.nextwave.DTO.FileUploadRequest;
 import com.backend.nextwave.DTO.FilesResponse;
 import com.backend.nextwave.DTO.GetAllFileResponse;
-import com.backend.nextwave.Exception.CommanException;
 import com.backend.nextwave.Exception.FileNotFoundException;
 import com.backend.nextwave.Exception.UnAuthorizeException;
-//import com.backend.nextwave.Helper.CloudinaryService;
 import com.backend.nextwave.Helper.EmailFileSharing;
-import com.backend.nextwave.Model.Files;
-import com.backend.nextwave.Repository.FilesRepository;
+import com.backend.nextwave.Model.Entity.Files;
 import com.backend.nextwave.Service.ActivityService;
-import com.backend.nextwave.Service.AuthService;
 import com.backend.nextwave.Service.FileService;
+import com.backend.nextwave.Service.UserDetail;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,33 +30,36 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api")
 public class FileController {
-    @Autowired
-    private FileService fileService;
 
-    @Autowired
-    private AuthService authService;
+    private final FileService fileService;
 
-    @Autowired
-    private ActivityService activityService;
 
-    @Autowired
-    private JwtConfig jwtConfig;
+    private final ActivityService activityService;
 
-    @Autowired
-    private EmailFileSharing emailFileSharing;
 
-//    @Autowired
+    private final JwtConfig jwtConfig;
+
+
+    private final EmailFileSharing emailFileSharing;
+
+    public FileController(FileService fileService, ActivityService activityService, JwtConfig jwtConfig, EmailFileSharing emailFileSharing) {
+        this.fileService = fileService;
+
+        this.activityService = activityService;
+        this.jwtConfig = jwtConfig;
+        this.emailFileSharing = emailFileSharing;
+    }
+    //    @Autowired
 //    private CloudinaryService cloudinaryService;
 
     @PostMapping("/uploadFiles")
-    public ResponseEntity<FilesResponse> uploadFiles(@RequestHeader("Authorization") String token, @RequestParam("file")  MultipartFile file, @RequestParam("password") @NotBlank String password
+    public ResponseEntity<FilesResponse> uploadFiles(@AuthenticationPrincipal UserDetail userDetail,
+                                                     @RequestParam("file") MultipartFile file, @RequestParam("password") @NotBlank String password
     , @RequestParam("oneTimeAccess") boolean oneTimeAccess , @RequestParam("expiryDate")LocalDate expiryDate ) throws UnAuthorizeException {
         FilesResponse response = new FilesResponse();
-        if (!jwtConfig.validateToken(token)){
-            throw new UnAuthorizeException();
-        }
+
         try {
-            String email = jwtConfig.extractEmail(token);
+            String email = userDetail.getUsername();
             String originalFileName = file.getOriginalFilename();
             FileUploadRequest fileUploadRequest = new FileUploadRequest();
             fileUploadRequest.setExpiryDate(expiryDate);
@@ -67,7 +67,7 @@ public class FileController {
             fileUploadRequest.setOneTimeAccess(oneTimeAccess);
 
             Files files = fileService.saveFile(file, fileUploadRequest,email);
-            activityService.addUpload(files.getId() + " Uploaded ", files.getFileName(), authService.extraceUser(token));
+            activityService.addUpload(files.getId() + " Uploaded ", files.getFileName(), email);
             response.setMessage("The file "+files.getFileName()+" has been uploaded successfully.");
             response.setStatus(true);
             response.setFile(files);
@@ -79,10 +79,8 @@ public class FileController {
     }
 
     @GetMapping("/getFiles")
-    public ResponseEntity<Files> getFile(@RequestHeader("Authorization") String token ,@RequestParam @NotBlank long id) throws Exception {
-        if (!jwtConfig.validateToken(token)){
-            throw new UnAuthorizeException();
-        }
+    public ResponseEntity<Files> getFile(@RequestParam @NotBlank long id) throws Exception {
+
         FilesResponse response = new FilesResponse();
        Optional<Files> file = fileService.getFile(id);
         if (file.isPresent()) {
@@ -96,11 +94,9 @@ public class FileController {
     }
 
     @GetMapping("/getAllFiles")
-    public ResponseEntity<GetAllFileResponse> getFile(@RequestHeader("Authorization") String token ) throws Exception {
-            if (!jwtConfig.validateToken(token)){
-                throw new UnAuthorizeException();
-            }
-        String email = jwtConfig.extractEmail(token);
+    public ResponseEntity<GetAllFileResponse> getFile( @AuthenticationPrincipal UserDetail userDetail) throws Exception {
+
+        String email = userDetail.getUsername();
         GetAllFileResponse response = new GetAllFileResponse();
         List<Files> file = fileService.getAllFile(email);
             for (Files files : file) {
@@ -113,10 +109,8 @@ public class FileController {
     }
 
     @GetMapping("/deleteFiles")
-    public ResponseEntity<FilesResponse> deleteFile(@RequestHeader("Authorization") String token ,@RequestParam @NotBlank long id) throws Exception {
-        if (!jwtConfig.validateToken(token)){
-            throw new UnAuthorizeException();
-        }
+    public ResponseEntity<FilesResponse> deleteFile(@RequestParam @NotBlank long id) throws Exception {
+
         FilesResponse response = new FilesResponse();
          Files files =  fileService.deleteFile(id);
         response.setFile(files);
@@ -126,10 +120,8 @@ public class FileController {
     }
 
     @PostMapping("/shareFiles")
-    public ResponseEntity<FilesResponse> shareFile(@RequestHeader("Authorization") String token, @RequestParam @NotBlank long id, @RequestParam @NotBlank String link, @RequestParam @NotBlank String email) throws Exception {
-        if (!jwtConfig.validateToken(token)){
-            throw new UnAuthorizeException();
-        }
+    public ResponseEntity<FilesResponse> shareFile(@AuthenticationPrincipal UserDetail userDetail, @RequestParam @NotBlank long id, @RequestParam @NotBlank String link, @RequestParam @NotBlank String email) throws Exception {
+
         FilesResponse response = new FilesResponse();
         Optional<Files> file = fileService.getFile(id);
         if (file.isPresent()) {
@@ -137,7 +129,7 @@ public class FileController {
             foundFile.setShared(true);
             fileService.update(foundFile);
             emailFileSharing.sendLinkEmail(email, link, foundFile);
-            activityService.addShare(foundFile.getId() + " shared ", foundFile.getFileName(), authService.extraceUser(token));
+            activityService.addShare(foundFile.getId() + " shared ", foundFile.getFileName(), userDetail.getUsername());
             response.setMessage("The file "+file.get().getFileName()+"  has been shared successfully.");
             response.setStatus(true);
         return new ResponseEntity<>(response , HttpStatus.ACCEPTED);
@@ -146,10 +138,8 @@ public class FileController {
     }
 
     @PostMapping("/downloadFile/{id}")
-    public ResponseEntity<byte[]> downloadFile(@RequestHeader("Authorization") String token, @PathVariable @NotBlank Long id, @RequestBody @Valid FileUploadRequest fileUploadRequest) throws Exception {
-        if (!jwtConfig.validateToken(token)){
-            throw new UnAuthorizeException();
-        }
+    public ResponseEntity<byte[]> downloadFile(@AuthenticationPrincipal UserDetail userDetail, @PathVariable @NotBlank Long id, @RequestBody @Valid FileUploadRequest fileUploadRequest) throws Exception {
+
         Optional<Files> file = fileService.getFile(id);
         if (file.isPresent()) {
             Files foundFile = file.get();
@@ -159,7 +149,7 @@ public class FileController {
             if (foundFile.isOneTimeAccess()) {
                 foundFile.setDelete(true);
             }
-            activityService.addDownload(foundFile.getId() + " Downloaded ", foundFile.getFileName(), authService.extraceUser(token));
+            activityService.addDownload(foundFile.getId() + " Downloaded ", foundFile.getFileName(), userDetail.getUsername());
             foundFile.setFileCode(fileService.getDecryptCode(foundFile.getId()));
             byte[] fileContent = foundFile.getFileCode();
             String contentType = foundFile.getFileType();
@@ -174,10 +164,8 @@ public class FileController {
     }
 
     @GetMapping("/changeMode")
-    public ResponseEntity<FilesResponse> changeShareMode(@RequestHeader("Authorization") String token,@RequestParam @NotBlank long id) throws FileNotFoundException, UnAuthorizeException {
-        if (!jwtConfig.validateToken(token)){
-            throw new UnAuthorizeException();
-        }
+    public ResponseEntity<FilesResponse> changeShareMode(@RequestParam @NotBlank long id) throws FileNotFoundException, UnAuthorizeException {
+
         Optional <Files> files = fileService.getFile(id);
         if(files.isPresent()){
             files.get().setShared(!files.get().isShared());
