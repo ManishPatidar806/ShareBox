@@ -19,12 +19,8 @@ import java.util.Map;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
-
-
     private final JwtConfig jwtConfig;
-
     private final UserDetailService userDetailService;
-
     public JwtFilter(JwtConfig jwtConfig, UserDetailService userDetailService) {
         this.jwtConfig = jwtConfig;
         this.userDetailService = userDetailService;
@@ -57,6 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (Exception e) {
+            String serverMessage = e.getMessage() != null ? e.getMessage() : "No server message";
             response.setStatus(401);
             response.setContentType("application/json");
             response.getWriter().write(
@@ -64,7 +61,7 @@ public class JwtFilter extends OncePerRequestFilter {
                             Map.of(
                                     "error", "Internal Server Error",
                                     "message", "Unauthorized Access",
-                                    "serverMessage", e.getMessage()
+                                    "serverMessage", serverMessage
                             )
                     )
             );

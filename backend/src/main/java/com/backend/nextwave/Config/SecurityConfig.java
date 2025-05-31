@@ -24,7 +24,7 @@ public class SecurityConfig {
         return httpSecurity.csrf(AbstractHttpConfigurer::disable).
                 cors(cors->cors.configurationSource(corsConfig.configurationSource())).
                 authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/signup", "/api/auth/login").permitAll()
+                        auth.requestMatchers("/api/auth/signup", "/api/auth/signin").permitAll()
                                 .anyRequest()
                         .authenticated()).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

@@ -48,7 +48,7 @@ public class EmailFileSharing {
                     "<div class='main-content'>" +
                     "<h1>Your File is Ready to Download</h1>" +
                     "<p>Hello User,</p>" +
-                    "<p>[Sender Name] ([Sender Email]) has shared a file with you via SecureFileX.</p>" +
+                    "<p>Your Friend has shared a file with you via SecureFileX.</p>" +
                     "<div class='file-info'>" +
                     "<p><strong>File Name:</strong> "+files.getFileName() +"</p>" +
                     "<p><strong>Size:</strong> "+files.getFileSize() +"</p>" +

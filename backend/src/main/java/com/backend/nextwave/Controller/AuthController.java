@@ -4,6 +4,7 @@ import com.backend.nextwave.Config.JwtConfig;
 import com.backend.nextwave.DTO.AuthResponse;
 import com.backend.nextwave.DTO.ChangePasswordDto;
 import com.backend.nextwave.DTO.CommonResponse;
+import com.backend.nextwave.DTO.LoginRequest;
 import com.backend.nextwave.Exception.UnAuthorizeException;
 import com.backend.nextwave.Model.Entity.User;
 import com.backend.nextwave.Service.AuthService;
@@ -47,8 +48,10 @@ public class AuthController {
         return new ResponseEntity<>(authResponse , HttpStatus.OK);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestParam @NotBlank String email , @RequestParam @NotBlank String password) throws Exception {
+    @PostMapping("/signin")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) throws Exception {
+     String email = request.getEmail();
+     String password = request.getPassword();
         User user1 = authService.loginUser(email,password);
         AuthResponse authResponse = new AuthResponse();
         if(user1.isTwoFactorEnabled()){

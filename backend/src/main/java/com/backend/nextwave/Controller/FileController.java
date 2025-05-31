@@ -13,6 +13,7 @@ import com.backend.nextwave.Service.FileService;
 import com.backend.nextwave.Service.UserDetail;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,8 +50,6 @@ public class FileController {
         this.jwtConfig = jwtConfig;
         this.emailFileSharing = emailFileSharing;
     }
-    //    @Autowired
-//    private CloudinaryService cloudinaryService;
 
     @PostMapping("/uploadFiles")
     public ResponseEntity<FilesResponse> uploadFiles(@AuthenticationPrincipal UserDetail userDetail,
@@ -79,7 +78,7 @@ public class FileController {
     }
 
     @GetMapping("/getFiles")
-    public ResponseEntity<Files> getFile(@RequestParam @NotBlank long id) throws Exception {
+    public ResponseEntity<Files> getFile(@RequestParam @NotNull long id) throws Exception {
 
         FilesResponse response = new FilesResponse();
        Optional<Files> file = fileService.getFile(id);
@@ -109,7 +108,7 @@ public class FileController {
     }
 
     @GetMapping("/deleteFiles")
-    public ResponseEntity<FilesResponse> deleteFile(@RequestParam @NotBlank long id) throws Exception {
+    public ResponseEntity<FilesResponse> deleteFile(@RequestParam @NotNull long id) throws Exception {
 
         FilesResponse response = new FilesResponse();
          Files files =  fileService.deleteFile(id);
@@ -120,7 +119,7 @@ public class FileController {
     }
 
     @PostMapping("/shareFiles")
-    public ResponseEntity<FilesResponse> shareFile(@AuthenticationPrincipal UserDetail userDetail, @RequestParam @NotBlank long id, @RequestParam @NotBlank String link, @RequestParam @NotBlank String email) throws Exception {
+    public ResponseEntity<FilesResponse> shareFile(@AuthenticationPrincipal UserDetail userDetail, @RequestParam @NotNull long id, @RequestParam @NotBlank String link, @RequestParam @NotBlank String email) throws Exception {
 
         FilesResponse response = new FilesResponse();
         Optional<Files> file = fileService.getFile(id);
@@ -138,7 +137,7 @@ public class FileController {
     }
 
     @PostMapping("/downloadFile/{id}")
-    public ResponseEntity<byte[]> downloadFile(@AuthenticationPrincipal UserDetail userDetail, @PathVariable @NotBlank Long id, @RequestBody @Valid FileUploadRequest fileUploadRequest) throws Exception {
+    public ResponseEntity<byte[]> downloadFile(@AuthenticationPrincipal UserDetail userDetail, @PathVariable @NotNull Long id, @RequestBody @Valid FileUploadRequest fileUploadRequest) throws Exception {
 
         Optional<Files> file = fileService.getFile(id);
         if (file.isPresent()) {
@@ -164,7 +163,7 @@ public class FileController {
     }
 
     @GetMapping("/changeMode")
-    public ResponseEntity<FilesResponse> changeShareMode(@RequestParam @NotBlank long id) throws FileNotFoundException, UnAuthorizeException {
+    public ResponseEntity<FilesResponse> changeShareMode(@RequestParam @NotNull long id) throws FileNotFoundException, UnAuthorizeException {
 
         Optional <Files> files = fileService.getFile(id);
         if(files.isPresent()){
