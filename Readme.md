@@ -1,4 +1,4 @@
-# SHareBox
+# ShareBox
 ## Overview
 ShareBox is a secure file-sharing system designed to ensure the confidentiality and integrity of shared files. By leveraging AES-256 encryption, ShareBox provides a robust platform for secure file transfers. The system integrates a powerful backend with a modern frontend to deliver a seamless and secure user experience.
 
@@ -38,6 +38,19 @@ ShareBox is a secure file-sharing system designed to ensure the confidentiality 
 
 ---
 
+## ScreenShot
+
+![Dashboard](Resources/Dashboard.png)
+![Home](Resources/Home.png)
+![Encrypt](Resources/Encrypt.png)
+![Settings](Resources/Settings.png)
+
+---
+
+## Demo
+https://www.youtube.com/watch?v=_lgZyj-ytDU
+
+---
 ## Installation
 
 ### Prerequisites
